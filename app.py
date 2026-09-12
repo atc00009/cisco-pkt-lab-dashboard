@@ -1,6 +1,4 @@
 import streamlit as st
-import streamlit.components.v1 as components
-from pyvis.network import Network
 import pandas as pd
 
 st.set_page_config(
@@ -11,80 +9,6 @@ st.set_page_config(
 
 st.title("🔌 Cisco Networking Labs & Topology Dashboard")
 st.caption("Interactive Packet Tracer topology diagrams and lab activity guides.")
-
-def render_packet_tracer_graph(nodes, edges, tab_key):
-    """Generates a dark-themed, perfectly centered network topology graph."""
-    net = Network(height="450px", width="100%", bgcolor="#0E1117", font_color="white")
-    
-    # Configure physics to pull nodes into the center and freeze them once settled
-    net.set_options("""
-    var options = {
-      "nodes": {
-        "font": { "size": 14, "color": "#FFFFFF" }
-      },
-      "physics": {
-        "forceAtlas2Based": {
-          "gravitationalConstant": -50,
-          "centralGravity": 0.03,
-          "springLength": 100,
-          "springConstant": 0.08
-        },
-        "maxVelocity": 50,
-        "solver": "forceAtlas2Based",
-        "timestep": 0.35,
-        "stabilization": { "enabled": true, "iterations": 150 }
-      }
-    }
-    """)
-    
-    for node in nodes:
-        net.add_node(
-            node["id"],
-            label=node["label"],
-            title=f"Device: {node['label']}\nType: {node['type']}\nIP: {node.get('ip', 'N/A')}",
-            color=node.get("color", "#0080FF"),
-            shape=node.get("shape", "dot"),
-            size=25
-        )
-    for edge in edges:
-        net.add_edge(
-            edge["from"], 
-            edge["to"], 
-            title=edge.get("label", ""),
-            label=edge.get("label", ""),
-            color=edge.get("color", "#848484"),
-            width=2
-        )
-        
-    filename = f"topology_{tab_key}.html"
-    net.save_graph(filename)
-    
-    with open(filename, "r", encoding="utf-8") as f:
-        html_content = f.read()
-    
-    # Force dark background, centered flexbox layout, and visible border on the iframe container
-    custom_dark_style = """
-    <style>
-        html, body {
-            background-color: #0E1117 !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            height: 100% !important;
-            width: 100% !important;
-            overflow: hidden !important;
-        }
-        #mynetwork {
-            background-color: #0E1117 !important;
-            border: 1px solid #262730 !important;
-            border-radius: 8px !important;
-            width: 100% !important;
-            height: 440px !important;
-        }
-    </style>
-    """
-    html_content = html_content.replace("<head>", f"<head>{custom_dark_style}")
-    
-    components.html(html_content, height=460)
 
 # -----------------------------------------------------------------------------
 # TAB DEFINITIONS
@@ -105,18 +29,23 @@ with tab1:
     
     with col1:
         st.subheader("Network Packet Diagram (Topology)")
-        t1_nodes = [
-            {"id": "PC1", "label": "Inside PC\n(192.168.1.10)", "type": "Host", "color": "#4CAF50", "shape": "square"},
-            {"id": "R_Inside", "label": "Inside Router\n(R1)", "type": "Router", "color": "#0080FF", "shape": "dot"},
-            {"id": "R_ISP", "label": "ISP Router", "type": "Router", "color": "#FF9800", "shape": "dot"},
-            {"id": "Server_Ext", "label": "Web Server\n(203.0.113.50)", "type": "Server", "color": "#E91E63", "shape": "triangle"}
-        ]
-        t1_edges = [
-            {"from": "PC1", "to": "R_Inside", "label": "Gi0/0 (192.168.1.1)"},
-            {"from": "R_Inside", "to": "R_ISP", "label": "Se0/0/0 (NAT Pool)", "color": "#FFC107"},
-            {"from": "R_ISP", "to": "Server_Ext", "label": "Gi0/1"}
-        ]
-        render_packet_tracer_graph(t1_nodes, t1_edges, tab_key="nat")
+        # Native, rock-solid Graphviz network diagram (never vanishes or breaks)
+        st.graphviz_chart("""
+            digraph {
+                rankdir=LR;
+                bgcolor="#0E1117";
+                node [style=filled, fontname="Arial", fontcolor="white", margin=0.3];
+                
+                PC1 [label="Inside PC\\n(192.168.1.10)", fillcolor="#4CAF50", shape=box];
+                R_Inside [label="Inside Router (R1)", fillcolor="#0080FF", shape=circle];
+                R_ISP [label="ISP Router", fillcolor="#FF9800", shape=circle];
+                Server_Ext [label="Web Server\\n(203.0.113.50)", fillcolor="#E91E63", shape=triangle];
+                
+                PC1 -> R_Inside [label=" Gi0/0", fontcolor="white", color="#848484"];
+                R_Inside -> R_ISP [label=" Se0/0/0 (NAT)", fontcolor="white", color="#FFC107"];
+                R_ISP -> Server_Ext [label=" Gi0/1", fontcolor="white", color="#848484"];
+            }
+        """)
         
     with col2:
         st.subheader("Lab Specifications")
@@ -156,21 +85,25 @@ with tab2:
     
     with col1:
         st.subheader("Network Packet Diagram (Topology)")
-        t2_nodes = [
-            {"id": "Branch_LAN", "label": "Branch PC\n(10.10.10.0/24)", "type": "Host", "color": "#4CAF50", "shape": "square"},
-            {"id": "R_Branch", "label": "Router Branch", "type": "Router", "color": "#0080FF", "shape": "dot"},
-            {"id": "Cloud_WAN", "label": "Internet WAN", "type": "Cloud", "color": "#9C27B0", "shape": "diamond"},
-            {"id": "R_HQ", "label": "Router HQ", "type": "Router", "color": "#0080FF", "shape": "dot"},
-            {"id": "HQ_LAN", "label": "HQ Server\n(10.20.20.0/24)", "type": "Server", "color": "#E91E63", "shape": "triangle"}
-        ]
-        t2_edges = [
-            {"from": "Branch_LAN", "to": "R_Branch", "label": "LAN Access"},
-            {"from": "R_Branch", "to": "Cloud_WAN", "label": "Physical ISP (172.16.1.1)"},
-            {"from": "Cloud_WAN", "to": "R_HQ", "label": "Physical ISP (172.16.2.1)"},
-            {"from": "R_HQ", "to": "HQ_LAN", "label": "LAN Access"},
-            {"from": "R_Branch", "to": "R_HQ", "label": "GRE Tunnel 0", "color": "#00E676"}
-        ]
-        render_packet_tracer_graph(t2_nodes, t2_edges, tab_key="gre")
+        st.graphviz_chart("""
+            digraph {
+                rankdir=LR;
+                bgcolor="#0E1117";
+                node [style=filled, fontname="Arial", fontcolor="white", margin=0.3];
+                
+                Branch_LAN [label="Branch PC\\n(10.10.10.0/24)", fillcolor="#4CAF50", shape=box];
+                R_Branch [label="Router Branch", fillcolor="#0080FF", shape=circle];
+                Cloud_WAN [label="Internet WAN", fillcolor="#9C27B0", shape=diamond];
+                R_HQ [label="Router HQ", fillcolor="#0080FF", shape=circle];
+                HQ_LAN [label="HQ Server\\n(10.20.20.0/24)", fillcolor="#E91E63", shape=triangle];
+                
+                Branch_LAN -> R_Branch [label=" LAN", fontcolor="white", color="#848484"];
+                R_Branch -> Cloud_WAN [label=" ISP", fontcolor="white", color="#848484"];
+                Cloud_WAN -> R_HQ [label=" ISP", fontcolor="white", color="#848484"];
+                R_HQ -> HQ_LAN [label=" LAN", fontcolor="white", color="#848484"];
+                R_Branch -> R_HQ [label=" GRE Tunnel 0", fontcolor="#00E676", constraint=false];
+            }
+        """)
         
     with col2:
         st.subheader("Lab Specifications")
@@ -203,16 +136,20 @@ with tab3:
     
     with col1:
         st.subheader("Network Packet Diagram (Topology)")
-        t3_nodes = [
-            {"id": "R1_PAP", "label": "Router R1\n(PAP Client)", "type": "Router", "color": "#0080FF", "shape": "dot"},
-            {"id": "R2_Central", "label": "Central ISP Router", "type": "Router", "color": "#FF9800", "shape": "dot"},
-            {"id": "R3_CHAP", "label": "Router R3\n(CHAP Peer)", "type": "Router", "color": "#0080FF", "shape": "dot"}
-        ]
-        t3_edges = [
-            {"from": "R1_PAP", "to": "R2_Central", "label": "PPP Link (PAP)", "color": "#FF5722"},
-            {"from": "R3_CHAP", "to": "R2_Central", "label": "PPP Link (CHAP)", "color": "#3F51B5"}
-        ]
-        render_packet_tracer_graph(t3_nodes, t3_edges, tab_key="ppp")
+        st.graphviz_chart("""
+            digraph {
+                rankdir=LR;
+                bgcolor="#0E1117";
+                node [style=filled, fontname="Arial", fontcolor="white", margin=0.3];
+                
+                R1_PAP [label="Router R1\\n(PAP Client)", fillcolor="#0080FF", shape=circle];
+                R2_Central [label="Central ISP Router", fillcolor="#FF9800", shape=circle];
+                R3_CHAP [label="Router R3\\n(CHAP Peer)", fillcolor="#0080FF", shape=circle];
+                
+                R1_PAP -> R2_Central [label=" PPP Link (PAP)", fontcolor="white", color="#FF5722"];
+                R3_CHAP -> R2_Central [label=" PPP Link (CHAP)", fontcolor="white", color="#3F51B5"];
+            }
+        """)
         
     with col2:
         st.subheader("Lab Specifications")
@@ -251,21 +188,25 @@ with tab4:
     
     with col1:
         st.subheader("Network Packet Diagram (Topology)")
-        t4_nodes = [
-            {"id": "SiteA", "label": "Site A LAN\n(192.168.10.0/24)", "type": "Host", "color": "#4CAF50", "shape": "square"},
-            {"id": "GW_A", "label": "IPSec Gateway A", "type": "Router", "color": "#0080FF", "shape": "dot"},
-            {"id": "Untrusted", "label": "Public Internet", "type": "Cloud", "color": "#F44336", "shape": "diamond"},
-            {"id": "GW_B", "label": "IPSec Gateway B", "type": "Router", "color": "#0080FF", "shape": "dot"},
-            {"id": "SiteB", "label": "Site B LAN\n(192.168.20.0/24)", "type": "Host", "color": "#4CAF50", "shape": "square"}
-        ]
-        t4_edges = [
-            {"from": "SiteA", "to": "GW_A", "label": "LAN"},
-            {"from": "GW_A", "to": "Untrusted", "label": "WAN"},
-            {"from": "Untrusted", "to": "GW_B", "label": "WAN"},
-            {"from": "GW_B", "to": "SiteB", "label": "LAN"},
-            {"from": "GW_A", "to": "GW_B", "label": "IPSec Tunnel", "color": "#00E676"}
-        ]
-        render_packet_tracer_graph(t4_nodes, t4_edges, tab_key="ipsec")
+        st.graphviz_chart("""
+            digraph {
+                rankdir=LR;
+                bgcolor="#0E1117";
+                node [style=filled, fontname="Arial", fontcolor="white", margin=0.3];
+                
+                SiteA [label="Site A LAN\\n(192.168.10.0/24)", fillcolor="#4CAF50", shape=box];
+                GW_A [label="IPSec Gateway A", fillcolor="#0080FF", shape=circle];
+                Untrusted [label="Public Internet", fillcolor="#F44336", shape=diamond];
+                GW_B [label="IPSec Gateway B", fillcolor="#0080FF", shape=circle];
+                SiteB [label="Site B LAN\\n(192.168.20.0/24)", fillcolor="#4CAF50", shape=box];
+                
+                SiteA -> GW_A [label=" LAN", fontcolor="white", color="#848484"];
+                GW_A -> Untrusted [label=" WAN", fontcolor="white", color="#848484"];
+                Untrusted -> GW_B [label=" WAN", fontcolor="white", color="#848484"];
+                GW_B -> SiteB [label=" LAN", fontcolor="white", color="#848484"];
+                GW_A -> GW_B [label=" IPSec Tunnel", fontcolor="white", color="#00E676", constraint=false];
+            }
+        """)
         
     with col2:
         st.subheader("Lab Specifications")
