@@ -2,6 +2,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 from pyvis.network import Network
 import pandas as pd
+import uuid
 
 st.set_page_config(
     page_title="Cisco Lab Topology & Activity Dashboard",
@@ -12,8 +13,8 @@ st.set_page_config(
 st.title("🔌 Cisco Networking Labs & Topology Dashboard")
 st.caption("Interactive Packet Tracer topology diagrams and lab activity guides.")
 
-def render_packet_tracer_graph(nodes, edges, height="450px"):
-    """Generates an interactive network topology graph matching Cisco Packet Tracer styles."""
+def render_packet_tracer_graph(nodes, edges, tab_key, height="450px"):
+    """Generates an interactive network topology graph with a unique filename per tab."""
     net = Network(height=height, width="100%", bgcolor="#0E1117", font_color="white")
     net.barnes_hut(gravity=-3000, central_gravity=0.3, spring_length=120)
     
@@ -36,10 +37,15 @@ def render_packet_tracer_graph(nodes, edges, height="450px"):
             width=2
         )
         
-    net.save_graph("topology.html")
-    with open("topology.html", "r", encoding="utf-8") as f:
+    # Unique filename per tab prevents file collision and browser caching issues
+    filename = f"topology_{tab_key}.html"
+    net.save_graph(filename)
+    
+    with open(filename, "r", encoding="utf-8") as f:
         html_content = f.read()
-    components.html(html_content, height=470)
+    
+    # Pass a unique key to st.components.v1.html
+    components.html(html_content, height=470, key=f"pyvis_{tab_key}")
 
 # -----------------------------------------------------------------------------
 # TAB DEFINITIONS
@@ -71,7 +77,7 @@ with tab1:
             {"from": "R_Inside", "to": "R_ISP", "label": "Se0/0/0 (NAT Pool: 203.0.113.1-5)", "color": "#FFC107"},
             {"from": "R_ISP", "to": "Server_Ext", "label": "Gi0/1"}
         ]
-        render_packet_tracer_graph(t1_nodes, t1_edges)
+        render_packet_tracer_graph(t1_nodes, t1_edges, tab_key="nat")
         
     with col2:
         st.subheader("Lab Specifications")
@@ -125,7 +131,7 @@ with tab2:
             {"from": "R_HQ", "to": "HQ_LAN", "label": "LAN Access"},
             {"from": "R_Branch", "to": "R_HQ", "label": "GRE Tunnel 0 (192.168.100.0/30)", "color": "#00E676"}
         ]
-        render_packet_tracer_graph(t2_nodes, t2_edges)
+        render_packet_tracer_graph(t2_nodes, t2_edges, tab_key="gre")
         
     with col2:
         st.subheader("Lab Specifications")
@@ -167,7 +173,7 @@ with tab3:
             {"from": "R1_PAP", "to": "R2_Central", "label": "PPP Link (PAP Auth)", "color": "#FF5722"},
             {"from": "R3_CHAP", "to": "R2_Central", "label": "PPP Link (CHAP 3-way Handshake)", "color": "#3F51B5"}
         ]
-        render_packet_tracer_graph(t3_nodes, t3_edges)
+        render_packet_tracer_graph(t3_nodes, t3_edges, tab_key="ppp")
         
     with col2:
         st.subheader("Lab Specifications")
@@ -220,7 +226,7 @@ with tab4:
             {"from": "GW_B", "to": "SiteB", "label": "Internal LAN"},
             {"from": "GW_A", "to": "GW_B", "label": "AES/SHA IPSec Tunnel", "color": "#00E676"}
         ]
-        render_packet_tracer_graph(t4_nodes, t4_edges)
+        render_packet_tracer_graph(t4_nodes, t4_edges, tab_key="ipsec")
         
     with col2:
         st.subheader("Lab Specifications")
