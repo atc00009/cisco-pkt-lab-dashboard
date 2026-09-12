@@ -29,21 +29,21 @@ with tab1:
     
     with col1:
         st.subheader("Network Packet Diagram (Topology)")
-        # Native, rock-solid Graphviz network diagram (never vanishes or breaks)
         st.graphviz_chart("""
             digraph {
                 rankdir=LR;
                 bgcolor="#0E1117";
-                node [style=filled, fontname="Arial", fontcolor="white", margin=0.3];
+                node [style=filled, fontname="Arial", fontcolor="white", fontsize=14, margin=0.4];
+                edge [fontname="Arial", fontsize=12, fontcolor="white"];
                 
                 PC1 [label="Inside PC\\n(192.168.1.10)", fillcolor="#4CAF50", shape=box];
                 R_Inside [label="Inside Router (R1)", fillcolor="#0080FF", shape=circle];
                 R_ISP [label="ISP Router", fillcolor="#FF9800", shape=circle];
                 Server_Ext [label="Web Server\\n(203.0.113.50)", fillcolor="#E91E63", shape=triangle];
                 
-                PC1 -> R_Inside [label=" Gi0/0", fontcolor="white", color="#848484"];
-                R_Inside -> R_ISP [label=" Se0/0/0 (NAT)", fontcolor="white", color="#FFC107"];
-                R_ISP -> Server_Ext [label=" Gi0/1", fontcolor="white", color="#848484"];
+                PC1 -> R_Inside [label=" Gi0/0", color="#848484"];
+                R_Inside -> R_ISP [label=" Se0/0/0 (NAT)", color="#FFC107"];
+                R_ISP -> Server_Ext [label=" Gi0/1", color="#848484"];
             }
         """)
         
@@ -89,7 +89,8 @@ with tab2:
             digraph {
                 rankdir=LR;
                 bgcolor="#0E1117";
-                node [style=filled, fontname="Arial", fontcolor="white", margin=0.3];
+                node [style=filled, fontname="Arial", fontcolor="white", fontsize=14, margin=0.4];
+                edge [fontname="Arial", fontsize=12, fontcolor="white"];
                 
                 Branch_LAN [label="Branch PC\\n(10.10.10.0/24)", fillcolor="#4CAF50", shape=box];
                 R_Branch [label="Router Branch", fillcolor="#0080FF", shape=circle];
@@ -97,11 +98,11 @@ with tab2:
                 R_HQ [label="Router HQ", fillcolor="#0080FF", shape=circle];
                 HQ_LAN [label="HQ Server\\n(10.20.20.0/24)", fillcolor="#E91E63", shape=triangle];
                 
-                Branch_LAN -> R_Branch [label=" LAN", fontcolor="white", color="#848484"];
-                R_Branch -> Cloud_WAN [label=" ISP", fontcolor="white", color="#848484"];
-                Cloud_WAN -> R_HQ [label=" ISP", fontcolor="white", color="#848484"];
-                R_HQ -> HQ_LAN [label=" LAN", fontcolor="white", color="#848484"];
-                R_Branch -> R_HQ [label=" GRE Tunnel 0", fontcolor="#00E676", constraint=false];
+                Branch_LAN -> R_Branch [label=" LAN", color="#848484"];
+                R_Branch -> Cloud_WAN [label=" ISP", color="#848484"];
+                Cloud_WAN -> R_HQ [label=" ISP", color="#848484"];
+                R_HQ -> HQ_LAN [label=" LAN", color="#848484"];
+                R_Branch -> R_HQ [label=" GRE Tunnel 0", color="#00E676", constraint=false];
             }
         """)
         
@@ -140,14 +141,15 @@ with tab3:
             digraph {
                 rankdir=LR;
                 bgcolor="#0E1117";
-                node [style=filled, fontname="Arial", fontcolor="white", margin=0.3];
+                node [style=filled, fontname="Arial", fontcolor="white", fontsize=14, margin=0.4];
+                edge [fontname="Arial", fontsize=12, fontcolor="white"];
                 
                 R1_PAP [label="Router R1\\n(PAP Client)", fillcolor="#0080FF", shape=circle];
                 R2_Central [label="Central ISP Router", fillcolor="#FF9800", shape=circle];
                 R3_CHAP [label="Router R3\\n(CHAP Peer)", fillcolor="#0080FF", shape=circle];
                 
-                R1_PAP -> R2_Central [label=" PPP Link (PAP)", fontcolor="white", color="#FF5722"];
-                R3_CHAP -> R2_Central [label=" PPP Link (CHAP)", fontcolor="white", color="#3F51B5"];
+                R1_PAP -> R2_Central [label=" PPP Link (PAP)", color="#FF5722"];
+                R3_CHAP -> R2_Central [label=" PPP Link (CHAP)", color="#3F51B5"];
             }
         """)
         
@@ -192,7 +194,8 @@ with tab4:
             digraph {
                 rankdir=LR;
                 bgcolor="#0E1117";
-                node [style=filled, fontname="Arial", fontcolor="white", margin=0.3];
+                node [style=filled, fontname="Arial", fontcolor="white", fontsize=14, margin=0.4];
+                edge [fontname="Arial", fontsize=12, fontcolor="white"];
                 
                 SiteA [label="Site A LAN\\n(192.168.10.0/24)", fillcolor="#4CAF50", shape=box];
                 GW_A [label="IPSec Gateway A", fillcolor="#0080FF", shape=circle];
@@ -200,11 +203,11 @@ with tab4:
                 GW_B [label="IPSec Gateway B", fillcolor="#0080FF", shape=circle];
                 SiteB [label="Site B LAN\\n(192.168.20.0/24)", fillcolor="#4CAF50", shape=box];
                 
-                SiteA -> GW_A [label=" LAN", fontcolor="white", color="#848484"];
-                GW_A -> Untrusted [label=" WAN", fontcolor="white", color="#848484"];
-                Untrusted -> GW_B [label=" WAN", fontcolor="white", color="#848484"];
-                GW_B -> SiteB [label=" LAN", fontcolor="white", color="#848484"];
-                GW_A -> GW_B [label=" IPSec Tunnel", fontcolor="white", color="#00E676", constraint=false];
+                SiteA -> GW_A [label=" LAN", color="#848484"];
+                GW_A -> Untrusted [label=" WAN", color="#848484"];
+                Untrusted -> GW_B [label=" WAN", color="#848484"];
+                GW_B -> SiteB [label=" LAN", color="#848484"];
+                GW_A -> GW_B [label=" IPSec Tunnel", color="#00E676", constraint=false];
             }
         """)
         
