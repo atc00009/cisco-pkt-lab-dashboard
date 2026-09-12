@@ -2,7 +2,6 @@ import streamlit as st
 import streamlit.components.v1 as components
 from pyvis.network import Network
 import pandas as pd
-import uuid
 
 st.set_page_config(
     page_title="Cisco Lab Topology & Activity Dashboard",
@@ -37,15 +36,15 @@ def render_packet_tracer_graph(nodes, edges, tab_key, height="450px"):
             width=2
         )
         
-    # Unique filename per tab prevents file collision and browser caching issues
+    # Unique filename per tab prevents file collisions on Streamlit Cloud
     filename = f"topology_{tab_key}.html"
     net.save_graph(filename)
     
     with open(filename, "r", encoding="utf-8") as f:
         html_content = f.read()
     
-    # Pass a unique key to st.components.v1.html
-    components.html(html_content, height=470, key=f"pyvis_{tab_key}")
+    # Render HTML directly (without invalid 'key' argument)
+    components.html(html_content, height=470)
 
 # -----------------------------------------------------------------------------
 # TAB DEFINITIONS
