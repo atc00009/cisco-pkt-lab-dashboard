@@ -12,10 +12,18 @@ st.set_page_config(
 st.title("🔌 Cisco Networking Labs & Topology Dashboard")
 st.caption("Interactive Packet Tracer topology diagrams and lab activity guides.")
 
-def render_packet_tracer_graph(nodes, edges, tab_key, height="450px"):
-    """Generates an interactive network topology graph with a unique filename per tab."""
+def render_packet_tracer_graph(nodes, edges, tab_key, height="480px"):
+    """Generates a centered, fully responsive Pyvis network topology graph."""
+    # Set height to 100% inside container and force physics centering
     net = Network(height=height, width="100%", bgcolor="#0E1117", font_color="white")
-    net.barnes_hut(gravity=-3000, central_gravity=0.3, spring_length=120)
+    
+    # Adjusted physics: smooth force atlas & central gravity to keep nodes centered vertically
+    net.force_atlas_2based(
+        gravity=-120,
+        central_gravity=0.015,
+        spring_length=100,
+        spring_strength=0.08
+    )
     
     for node in nodes:
         net.add_node(
@@ -36,15 +44,29 @@ def render_packet_tracer_graph(nodes, edges, tab_key, height="450px"):
             width=2
         )
         
-    # Unique filename per tab prevents file collisions on Streamlit Cloud
     filename = f"topology_{tab_key}.html"
     net.save_graph(filename)
     
     with open(filename, "r", encoding="utf-8") as f:
         html_content = f.read()
     
-    # Render HTML directly (without invalid 'key' argument)
-    components.html(html_content, height=470)
+    # Inject CSS snippet to guarantee Pyvis canvas resizes automatically without vanishing
+    responsive_css = """
+    <style>
+        html, body, #mynetwork {
+            height: 100% !important;
+            width: 100% !important;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+    """
+    html_content = html_content.replace("<head>", f"<head>{responsive_css}")
+    
+    components.html(html_content, height=500)
 
 # -----------------------------------------------------------------------------
 # TAB DEFINITIONS
@@ -73,7 +95,7 @@ with tab1:
         ]
         t1_edges = [
             {"from": "PC1", "to": "R_Inside", "label": "Gi0/0 (192.168.1.1)"},
-            {"from": "R_Inside", "to": "R_ISP", "label": "Se0/0/0 (NAT Pool: 203.0.113.1-5)", "color": "#FFC107"},
+            {"from": "R_Inside", "to": "R_ISP", "label": "Se0/0/0 (NAT Pool)", "color": "#FFC107"},
             {"from": "R_ISP", "to": "Server_Ext", "label": "Gi0/1"}
         ]
         render_packet_tracer_graph(t1_nodes, t1_edges, tab_key="nat")
@@ -128,7 +150,7 @@ with tab2:
             {"from": "R_Branch", "to": "Cloud_WAN", "label": "Physical ISP (172.16.1.1)"},
             {"from": "Cloud_WAN", "to": "R_HQ", "label": "Physical ISP (172.16.2.1)"},
             {"from": "R_HQ", "to": "HQ_LAN", "label": "LAN Access"},
-            {"from": "R_Branch", "to": "R_HQ", "label": "GRE Tunnel 0 (192.168.100.0/30)", "color": "#00E676"}
+            {"from": "R_Branch", "to": "R_HQ", "label": "GRE Tunnel 0", "color": "#00E676"}
         ]
         render_packet_tracer_graph(t2_nodes, t2_edges, tab_key="gre")
         
@@ -170,7 +192,7 @@ with tab3:
         ]
         t3_edges = [
             {"from": "R1_PAP", "to": "R2_Central", "label": "PPP Link (PAP Auth)", "color": "#FF5722"},
-            {"from": "R3_CHAP", "to": "R2_Central", "label": "PPP Link (CHAP 3-way Handshake)", "color": "#3F51B5"}
+            {"from": "R3_CHAP", "to": "R2_Central", "label": "PPP Link (CHAP Auth)", "color": "#3F51B5"}
         ]
         render_packet_tracer_graph(t3_nodes, t3_edges, tab_key="ppp")
         
@@ -220,8 +242,8 @@ with tab4:
         ]
         t4_edges = [
             {"from": "SiteA", "to": "GW_A", "label": "Internal LAN"},
-            {"from": "GW_A", "to": "Untrusted", "label": "Unsecure WAN (209.165.200.225)"},
-            {"from": "Untrusted", "to": "GW_B", "label": "Unsecure WAN (209.165.201.1)"},
+            {"from": "GW_A", "to": "Untrusted", "label": "Unsecure WAN"},
+            {"from": "Untrusted", "to": "GW_B", "label": "Unsecure WAN"},
             {"from": "GW_B", "to": "SiteB", "label": "Internal LAN"},
             {"from": "GW_A", "to": "GW_B", "label": "AES/SHA IPSec Tunnel", "color": "#00E676"}
         ]
