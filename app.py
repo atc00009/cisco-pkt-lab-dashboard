@@ -33,19 +33,19 @@ with tab1:
             digraph {
                 rankdir=LR;
                 bgcolor="#0E1117";
-                node [style=filled, fontname="Arial", fontcolor="white", fontsize=14, margin=0.4];
-                edge [fontname="Arial", fontsize=12, fontcolor="white"];
+                node [style="filled,rounded", fontname="Arial", fontcolor="white", fontsize=22, width=2.2, height=1.2, margin=0.3, penwidth=2];
+                edge [fontname="Arial", fontsize=18, fontcolor="white", penwidth=2.5];
                 
-                PC1 [label="Inside PC\\n(192.168.1.10)", fillcolor="#4CAF50", shape=box];
-                R_Inside [label="Inside Router (R1)", fillcolor="#0080FF", shape=circle];
-                R_ISP [label="ISP Router", fillcolor="#FF9800", shape=circle];
-                Server_Ext [label="Web Server\\n(203.0.113.50)", fillcolor="#E91E63", shape=triangle];
+                PC1 [label="Inside PC\\n(192.168.1.10)", fillcolor="#2E7D32", shape=box];
+                R_Inside [label="Inside Router\\n(R1)", fillcolor="#1565C0", shape=circle];
+                R_ISP [label="ISP Router", fillcolor="#EF6C00", shape=circle];
+                Server_Ext [label="Web Server\\n(203.0.113.50)", fillcolor="#AD1457", shape=box];
                 
-                PC1 -> R_Inside [label=" Gi0/0", color="#848484"];
-                R_Inside -> R_ISP [label=" Se0/0/0 (NAT)", color="#FFC107"];
-                R_ISP -> Server_Ext [label=" Gi0/1", color="#848484"];
+                PC1 -> R_Inside [label=" Gi0/0", color="#90CAF9"];
+                R_Inside -> R_ISP [label=" Se0/0/0 (NAT)", color="#FFEE58"];
+                R_ISP -> Server_Ext [label=" Gi0/1", color="#90CAF9"];
             }
-        """)
+        """, use_container_width=True)
         
     with col2:
         st.subheader("Lab Specifications")
@@ -89,22 +89,22 @@ with tab2:
             digraph {
                 rankdir=LR;
                 bgcolor="#0E1117";
-                node [style=filled, fontname="Arial", fontcolor="white", fontsize=14, margin=0.4];
-                edge [fontname="Arial", fontsize=12, fontcolor="white"];
+                node [style="filled,rounded", fontname="Arial", fontcolor="white", fontsize=22, width=2.2, height=1.2, margin=0.3, penwidth=2];
+                edge [fontname="Arial", fontsize=18, fontcolor="white", penwidth=2.5];
                 
-                Branch_LAN [label="Branch PC\\n(10.10.10.0/24)", fillcolor="#4CAF50", shape=box];
-                R_Branch [label="Router Branch", fillcolor="#0080FF", shape=circle];
-                Cloud_WAN [label="Internet WAN", fillcolor="#9C27B0", shape=diamond];
-                R_HQ [label="Router HQ", fillcolor="#0080FF", shape=circle];
-                HQ_LAN [label="HQ Server\\n(10.20.20.0/24)", fillcolor="#E91E63", shape=triangle];
+                Branch_LAN [label="Branch PC\\n(10.10.10.0/24)", fillcolor="#2E7D32", shape=box];
+                R_Branch [label="Router Branch", fillcolor="#1565C0", shape=circle];
+                Cloud_WAN [label="Internet WAN", fillcolor="#6A1B9A", shape=diamond];
+                R_HQ [label="Router HQ", fillcolor="#1565C0", shape=circle];
+                HQ_LAN [label="HQ Server\\n(10.20.20.0/24)", fillcolor="#AD1457", shape=box];
                 
-                Branch_LAN -> R_Branch [label=" LAN", color="#848484"];
-                R_Branch -> Cloud_WAN [label=" ISP", color="#848484"];
-                Cloud_WAN -> R_HQ [label=" ISP", color="#848484"];
-                R_HQ -> HQ_LAN [label=" LAN", color="#848484"];
-                R_Branch -> R_HQ [label=" GRE Tunnel 0", color="#00E676", constraint=false];
+                Branch_LAN -> R_Branch [label=" LAN", color="#90CAF9"];
+                R_Branch -> Cloud_WAN [label=" ISP", color="#90CAF9"];
+                Cloud_WAN -> R_HQ [label=" ISP", color="#90CAF9"];
+                R_HQ -> HQ_LAN [label=" LAN", color="#90CAF9"];
+                R_Branch -> R_HQ [label=" GRE Tunnel 0", color="#69F0AE", constraint=false];
             }
-        """)
+        """, use_container_width=True)
         
     with col2:
         st.subheader("Lab Specifications")
@@ -141,17 +141,17 @@ with tab3:
             digraph {
                 rankdir=LR;
                 bgcolor="#0E1117";
-                node [style=filled, fontname="Arial", fontcolor="white", fontsize=14, margin=0.4];
-                edge [fontname="Arial", fontsize=12, fontcolor="white"];
+                node [style="filled,rounded", fontname="Arial", fontcolor="white", fontsize=22, width=2.2, height=1.2, margin=0.3, penwidth=2];
+                edge [fontname="Arial", fontsize=18, fontcolor="white", penwidth=2.5];
                 
-                R1_PAP [label="Router R1\\n(PAP Client)", fillcolor="#0080FF", shape=circle];
-                R2_Central [label="Central ISP Router", fillcolor="#FF9800", shape=circle];
-                R3_CHAP [label="Router R3\\n(CHAP Peer)", fillcolor="#0080FF", shape=circle];
+                R1_PAP [label="Router R1\\n(PAP Client)", fillcolor="#1565C0", shape=circle];
+                R2_Central [label="Central ISP Router", fillcolor="#EF6C00", shape=circle];
+                R3_CHAP [label="Router R3\\n(CHAP Peer)", fillcolor="#1565C0", shape=circle];
                 
-                R1_PAP -> R2_Central [label=" PPP Link (PAP)", color="#FF5722"];
-                R3_CHAP -> R2_Central [label=" PPP Link (CHAP)", color="#3F51B5"];
+                R1_PAP -> R2_Central [label=" PPP Link (PAP)", color="#FF7043"];
+                R3_CHAP -> R2_Central [label=" PPP Link (CHAP)", color="#5C6BC0"];
             }
-        """)
+        """, use_container_width=True)
         
     with col2:
         st.subheader("Lab Specifications")
@@ -194,22 +194,22 @@ with tab4:
             digraph {
                 rankdir=LR;
                 bgcolor="#0E1117";
-                node [style=filled, fontname="Arial", fontcolor="white", fontsize=14, margin=0.4];
-                edge [fontname="Arial", fontsize=12, fontcolor="white"];
+                node [style="filled,rounded", fontname="Arial", fontcolor="white", fontsize=22, width=2.2, height=1.2, margin=0.3, penwidth=2];
+                edge [fontname="Arial", fontsize=18, fontcolor="white", penwidth=2.5];
                 
-                SiteA [label="Site A LAN\\n(192.168.10.0/24)", fillcolor="#4CAF50", shape=box];
-                GW_A [label="IPSec Gateway A", fillcolor="#0080FF", shape=circle];
-                Untrusted [label="Public Internet", fillcolor="#F44336", shape=diamond];
-                GW_B [label="IPSec Gateway B", fillcolor="#0080FF", shape=circle];
-                SiteB [label="Site B LAN\\n(192.168.20.0/24)", fillcolor="#4CAF50", shape=box];
+                SiteA [label="Site A LAN\\n(192.168.10.0/24)", fillcolor="#2E7D32", shape=box];
+                GW_A [label="IPSec Gateway A", fillcolor="#1565C0", shape=circle];
+                Untrusted [label="Public Internet", fillcolor="#C62828", shape=diamond];
+                GW_B [label="IPSec Gateway B", fillcolor="#1565C0", shape=circle];
+                SiteB [label="Site B LAN\\n(192.168.20.0/24)", fillcolor="#2E7D32", shape=box];
                 
-                SiteA -> GW_A [label=" LAN", color="#848484"];
-                GW_A -> Untrusted [label=" WAN", color="#848484"];
-                Untrusted -> GW_B [label=" WAN", color="#848484"];
-                GW_B -> SiteB [label=" LAN", color="#848484"];
-                GW_A -> GW_B [label=" IPSec Tunnel", color="#00E676", constraint=false];
+                SiteA -> GW_A [label=" LAN", color="#90CAF9"];
+                GW_A -> Untrusted [label=" WAN", color="#90CAF9"];
+                Untrusted -> GW_B [label=" WAN", color="#90CAF9"];
+                GW_B -> SiteB [label=" LAN", color="#90CAF9"];
+                GW_A -> GW_B [label=" IPSec Tunnel", color="#69F0AE", constraint=false];
             }
-        """)
+        """, use_container_width=True)
         
     with col2:
         st.subheader("Lab Specifications")
